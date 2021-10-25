@@ -6,7 +6,7 @@ barbells.
 The `calc` command outputs which plates to use and the optimal order to load
 them on the bar to minimize effort across a series of target weights.
 
-The `plan` command outputs a workout plan based on Jim Wendler's 5/3/1 BBB
+The `plan` command outputs a workout plan based on [Jim Wendler's 5/3/1 BBB](https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big)
 program in CSV format.
 
 ## Commands
