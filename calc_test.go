@@ -26,7 +26,7 @@ func TestBestSolution(t *testing.T) {
 	}
 
 	sets := []int{55, 65, 75, 55}
-	result := BestSolution(tree, sets, 5)
+	result := BestSolution(tree, sets, 5, false)
 
 	got := make([]string, 0)
 	for _, node := range result {

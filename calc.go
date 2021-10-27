@@ -1,6 +1,7 @@
 package platecalc
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -24,7 +25,7 @@ func Permutations(plates ...float32) [][]float32 {
 	return platesColl
 }
 
-func BestSolution(tree *Tree, setWeights []int, maxDistance int) []*Tree {
+func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*Tree {
 	if len(setWeights) == 0 {
 		return nil
 	}
@@ -36,10 +37,12 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int) []*Tree {
 		if score < bestScore {
 			bestScore = score
 			solution = nodes
-			// for _, n := range nodes {
-			// 	fmt.Printf("%3v: %v (score=%v)\n", n.Weight, n, n.Score())
-			// }
-			// fmt.Printf("total=%v\n\n", score)
+			if debug {
+				for _, n := range nodes {
+					fmt.Printf("%3v: %v (score=%v)\n", n.TotalWeight(), n, n.Score())
+				}
+				fmt.Printf("total=%v\n\n", score)
+			}
 		}
 	}
 	nextFn := foundSolution
