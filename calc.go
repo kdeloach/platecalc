@@ -24,7 +24,7 @@ func Permutations(plates ...float32) [][]float32 {
 	return platesColl
 }
 
-func BestSolution(tree *Tree, setWeights []int) []*Tree {
+func BestSolution(tree *Tree, setWeights []int, maxDistance int) []*Tree {
 	if len(setWeights) == 0 {
 		return nil
 	}
@@ -45,7 +45,6 @@ func BestSolution(tree *Tree, setWeights []int) []*Tree {
 	nextFn := foundSolution
 
 	head, tail := setWeights[0], setWeights[1:]
-	maxDistance := 5
 
 	for i := len(tail) - 1; i >= 0; i-- {
 		weight := tail[i]
