@@ -19,7 +19,7 @@ func TestPermutations(t *testing.T) {
 }
 
 func TestBestSolution(t *testing.T) {
-	tree := NewTree(45)
+	tree := NewTree(nil, 45)
 	perms := Permutations(5, 5, 10, 10, 2.5)
 	for _, p := range perms {
 		tree.Add(p...)

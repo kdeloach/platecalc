@@ -6,23 +6,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNodeProps(t *testing.T) {
-	tree := NewTree(45)
+func TestProps(t *testing.T) {
+	tree := NewTree(nil, 45)
 	node := tree.Add(45, 35, 25)
-	assert.Equal(t, float32(25), node.Plate)
-	assert.Equal(t, 255, node.Weight)
+	assert.Equal(t, float32(25), node.Value)
+	assert.Equal(t, 255, node.TotalWeight())
 	assert.Equal(t, 3, node.Depth)
-	assert.Equal(t, 190, node.Score)
+	assert.Equal(t, 190, node.Score())
 	assert.Equal(t, "45, 35, 25", node.String())
 }
 
 func TestWalk(t *testing.T) {
-	tree := NewTree(0)
+	tree := NewTree(nil, 0)
 	tree.Add(1, 2, 3)
 	tree.Add(1, 4, 5)
 
 	got := make([]string, 0)
-	tree.Walk(func(node *Node) {
+	tree.Walk(func(node *Tree) {
 		if node.Parent != nil {
 			got = append(got, node.String())
 		}
@@ -39,7 +39,7 @@ func TestWalk(t *testing.T) {
 }
 
 func TestWalkNearby(t *testing.T) {
-	tree := NewTree(0)
+	tree := NewTree(nil, 0)
 	tree.Add(1, 2, 3)
 	tree.Add(1, 2, 4)
 
@@ -47,7 +47,7 @@ func TestWalkNearby(t *testing.T) {
 	assert.NotNil(t, node)
 
 	got := make([]string, 0)
-	node.WalkNearby(1, func(node *Node, dist int) {
+	node.WalkNearby(1, func(node *Tree, dist int) {
 		if node.Parent != nil {
 			got = append(got, node.String())
 		}

@@ -5,47 +5,47 @@ import (
 	"strings"
 )
 
-type Node struct {
-	Parent *Node
-	Plate  float32
-	Weight int
-	Depth  int
-	Score  int
-	Nodes  map[float32]*Node
+type Tree struct {
+	Parent   *Tree
+	Depth    int
+	Children map[float32]*Tree
+	Value    float32
 }
 
-func NewTree(weight int) *Node {
-	return &Node{
-		Parent: nil,
-		Plate:  0,
-		Weight: weight,
-		Depth:  0,
-		Score:  0,
-		Nodes:  make(map[float32]*Node),
+func NewTree(parent *Tree, value float32) *Tree {
+	depth := 0
+	if parent != nil {
+		depth = parent.Depth + 1
+	}
+	return &Tree{
+		Parent:   parent,
+		Depth:    depth,
+		Children: make(map[float32]*Tree),
+		Value:    value,
 	}
 }
 
-func NewNode(parent *Node, plate float32) *Node {
-	weight := parent.Weight + int(plate*2)
-	depth := parent.Depth + 1
-	score := parent.Score + depth*int(plate)
-	return &Node{
-		Parent: parent,
-		Plate:  plate,
-		Weight: weight,
-		Depth:  depth,
-		Score:  score,
-		Nodes:  make(map[float32]*Node),
+func (t *Tree) Score() int {
+	if t.Parent == nil {
+		return 0
 	}
+	return t.Parent.Score() + t.Depth*int(t.Value)
 }
 
-func (node *Node) Find(plates ...float32) *Node {
+func (t *Tree) TotalWeight() int {
+	if t.Parent == nil {
+		return int(t.Value)
+	}
+	return t.Parent.TotalWeight() + int(t.Value*2)
+}
+
+func (t *Tree) Find(plates ...float32) *Tree {
 	if len(plates) == 0 {
 		return nil
 	}
 
 	plate, rest := plates[0], plates[1:]
-	next, ok := node.Nodes[plate]
+	next, ok := t.Children[plate]
 	if !ok {
 		return nil
 	}
@@ -57,16 +57,16 @@ func (node *Node) Find(plates ...float32) *Node {
 	}
 }
 
-func (node *Node) Add(plates ...float32) *Node {
+func (t *Tree) Add(plates ...float32) *Tree {
 	if len(plates) == 0 {
 		return nil
 	}
 
 	plate, rest := plates[0], plates[1:]
-	next, ok := node.Nodes[plate]
+	next, ok := t.Children[plate]
 	if !ok {
-		next = NewNode(node, plate)
-		node.Nodes[plate] = next
+		next = NewTree(t, plate)
+		t.Children[plate] = next
 	}
 
 	if len(rest) > 0 {
@@ -76,46 +76,46 @@ func (node *Node) Add(plates ...float32) *Node {
 	}
 }
 
-type WalkNodeFn func(*Node)
+type WalkTreeFn func(*Tree)
 
-func (node *Node) Walk(fn WalkNodeFn) {
-	fn(node)
-	for _, child := range node.Nodes {
+func (t *Tree) Walk(fn WalkTreeFn) {
+	fn(t)
+	for _, child := range t.Children {
 		child.Walk(fn)
 	}
 }
 
-type WalkNearbyNodeFn func(*Node, int)
+type WalkNearbyTreeFn func(*Tree, int)
 
-func (node *Node) WalkNearby(maxDistance int, fn WalkNearbyNodeFn) {
-	seen := make(map[*Node]bool)
+func (t *Tree) WalkNearby(maxDistance int, fn WalkNearbyTreeFn) {
+	seen := make(map[*Tree]bool)
 
-	var walk func(*Node, int)
-	walk = func(node *Node, distance int) {
-		if node == nil || distance > maxDistance {
+	var walk func(*Tree, int)
+	walk = func(t *Tree, distance int) {
+		if t == nil || distance > maxDistance {
 			return
 		}
-		if _, ok := seen[node]; ok {
+		if _, ok := seen[t]; ok {
 			return
 		}
 
-		fn(node, distance)
-		seen[node] = true
+		fn(t, distance)
+		seen[t] = true
 
-		for _, child := range node.Nodes {
+		for _, child := range t.Children {
 			walk(child, distance+1)
 		}
-		walk(node.Parent, distance+1)
+		walk(t.Parent, distance+1)
 	}
 
-	walk(node, 0)
+	walk(t, 0)
 }
 
-func (node *Node) String() string {
+func (t *Tree) String() string {
 	plates := make([]string, 0)
-	for parent := node; parent != nil; parent = parent.Parent {
+	for parent := t; parent != nil; parent = parent.Parent {
 		if parent.Parent != nil {
-			plates = append([]string{fmt.Sprintf("%v", parent.Plate)}, plates...)
+			plates = append([]string{fmt.Sprintf("%v", parent.Value)}, plates...)
 		}
 	}
 	return strings.Join(plates, ", ")

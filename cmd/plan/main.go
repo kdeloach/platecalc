@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var bar = flag.Int("bar", 45, "bar weight")
+var barWeight = flag.Int("bar", 45, "bar weight")
 var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
 var file = flag.String("file", "", "workout plan settings file")
 
@@ -26,7 +26,7 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	tree := platecalc.NewTree(*bar)
+	tree := platecalc.NewTree(nil, float32(*barWeight))
 	for _, perm := range platecalc.Permutations(plates...) {
 		tree.Add(perm...)
 	}

@@ -16,11 +16,11 @@ type WorkoutPlanSettings struct {
 }
 
 type wendler531BBB struct {
-	tree     *platecalc.Node
+	tree     *platecalc.Tree
 	settings *WorkoutPlanSettings
 }
 
-func NewWendler531BBB(tree *platecalc.Node, settings *WorkoutPlanSettings) *wendler531BBB {
+func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings) *wendler531BBB {
 	return &wendler531BBB{
 		tree:     tree,
 		settings: settings,
@@ -104,7 +104,7 @@ func (w *wendler531BBB) Write(writer *csv.Writer) {
 	}
 }
 
-func writeRow(writer *csv.Writer, lift string, week int, day int, tm float32, wt int, plates *platecalc.Node, sets int, reps int) {
+func writeRow(writer *csv.Writer, lift string, week int, day int, tm float32, wt int, plates *platecalc.Tree, sets int, reps int) {
 	writer.Write([]string{
 		lift,
 		fmt.Sprintf("%v", week+1),

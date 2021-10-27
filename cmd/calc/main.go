@@ -10,7 +10,7 @@ import (
 	"github.com/kdeloach/platecalc"
 )
 
-var bar = flag.Int("bar", 45, "bar weight")
+var barWeight = flag.Int("bar", 45, "bar weight")
 var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
 
 func main() {
@@ -27,28 +27,28 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	weights, err := parseWeights()
+	setWeights, err := parseWeights()
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	if len(weights) == 0 {
+	if len(setWeights) == 0 {
 		log.Fatalf("one or more weights is required")
 	}
 
-	tree := platecalc.NewTree(*bar)
+	tree := platecalc.NewTree(nil, float32(*barWeight))
 	for _, perm := range platecalc.Permutations(plates...) {
 		tree.Add(perm...)
 	}
 
-	result := platecalc.BestSolution(tree, weights)
+	result := platecalc.BestSolution(tree, setWeights)
 	if result == nil {
 		log.Fatalf("no solution found")
 		return
 	}
 
 	for _, node := range result {
-		fmt.Printf("%3v: %v\n", node.Weight, node)
+		fmt.Printf("%3v: %v\n", node.TotalWeight(), node)
 	}
 }
 

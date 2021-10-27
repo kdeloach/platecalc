@@ -24,42 +24,42 @@ func Permutations(plates ...float32) [][]float32 {
 	return platesColl
 }
 
-func BestSolution(tree *Node, sets []int) []*Node {
-	if len(sets) == 0 {
+func BestSolution(tree *Tree, setWeights []int) []*Tree {
+	if len(setWeights) == 0 {
 		return nil
 	}
 
 	bestScore := math.MaxInt32
-	var solution []*Node
+	var solution []*Tree
 
-	foundSolution := func(score int, nodes []*Node) {
+	foundSolution := func(score int, nodes []*Tree) {
 		if score < bestScore {
 			bestScore = score
 			solution = nodes
 			// for _, n := range nodes {
-			// 	fmt.Printf("%3v: %v (score=%v)\n", n.Weight, n, n.Score)
+			// 	fmt.Printf("%3v: %v (score=%v)\n", n.Weight, n, n.Score())
 			// }
 			// fmt.Printf("total=%v\n\n", score)
 		}
 	}
 	nextFn := foundSolution
 
-	head, tail := sets[0], sets[1:]
+	head, tail := setWeights[0], setWeights[1:]
 	maxDistance := 5
 
 	for i := len(tail) - 1; i >= 0; i-- {
 		weight := tail[i]
 		oldNextFn := nextFn
-		nextFn = func(prevScore int, prevNodes []*Node) {
+		nextFn = func(prevScore int, prevNodes []*Tree) {
 			prevNode := prevNodes[len(prevNodes)-1]
-			prevNode.WalkNearby(maxDistance, func(node *Node, dist int) {
-				if node.Weight == weight {
-					nodes := make([]*Node, len(prevNodes))
+			prevNode.WalkNearby(maxDistance, func(node *Tree, dist int) {
+				if node.TotalWeight() == weight {
+					nodes := make([]*Tree, len(prevNodes))
 					copy(nodes, prevNodes)
 					nodes = append(nodes, node)
 
-					// score := prevScore + node.Score*dist
-					// fmt.Printf("%v + %v * %v = %v\n", prevScore, node.Score, dist, score)
+					// score := prevScore + node.Score()*dist
+					// fmt.Printf("%v + %v * %v = %v\n", prevScore, node.Score(), dist, score)
 
 					// Optimize for number of plates added/removed
 					score := prevScore + dist
@@ -70,10 +70,10 @@ func BestSolution(tree *Node, sets []int) []*Node {
 		}
 	}
 
-	tree.Walk(func(node *Node) {
-		if node.Weight == head {
-			nodes := []*Node{node}
-			nextFn(node.Score, nodes)
+	tree.Walk(func(node *Tree) {
+		if node.TotalWeight() == head {
+			nodes := []*Tree{node}
+			nextFn(node.Score(), nodes)
 		}
 	})
 
