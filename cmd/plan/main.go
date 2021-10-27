@@ -17,6 +17,7 @@ import (
 var barWeight = flag.Int("bar", 45, "bar weight")
 var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
 var file = flag.String("file", "", "workout plan settings file")
+var maxDistance = flag.Int("maxdistance", 5, "maximum distance to search tree")
 
 func main() {
 	flag.Parse()
@@ -45,7 +46,7 @@ func main() {
 	w := csv.NewWriter(os.Stdout)
 	w.Comma = ';'
 
-	plan := plans.NewWendler531BBB(tree, settings)
+	plan := plans.NewWendler531BBB(tree, settings, *maxDistance)
 	plan.Write(w)
 }
 
