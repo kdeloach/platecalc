@@ -13,6 +13,7 @@ import (
 var barWeight = flag.Int("bar", 45, "bar weight")
 var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
 var maxDistance = flag.Int("maxdistance", 5, "maximum distance to search tree")
+var debug = flag.Bool("debug", false, "display debug output")
 
 func main() {
 	flag.Usage = func() {
@@ -42,7 +43,7 @@ func main() {
 		tree.Add(perm...)
 	}
 
-	result := platecalc.BestSolution(tree, setWeights, *maxDistance)
+	result := platecalc.BestSolution(tree, setWeights, *maxDistance, *debug)
 	if result == nil {
 		log.Fatalf("no solution found")
 		return

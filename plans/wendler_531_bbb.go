@@ -19,13 +19,15 @@ type wendler531BBB struct {
 	tree        *platecalc.Tree
 	settings    *WorkoutPlanSettings
 	maxDistance int
+	debug       bool
 }
 
-func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings, maxDistance int) *wendler531BBB {
+func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings, maxDistance int, debug bool) *wendler531BBB {
 	return &wendler531BBB{
 		tree:        tree,
 		settings:    settings,
 		maxDistance: maxDistance,
+		debug:       debug,
 	}
 }
 
@@ -79,7 +81,7 @@ func (w *wendler531BBB) Write(writer *csv.Writer) {
 				setWeights = append(setWeights, wt)
 			}
 
-			plates := platecalc.BestSolution(w.tree, setWeights, w.maxDistance)
+			plates := platecalc.BestSolution(w.tree, setWeights, w.maxDistance, w.debug)
 			if plates == nil {
 				log.Fatalf("no solution found for: %v weight=%v", lift1, w1)
 			}
@@ -97,7 +99,7 @@ func (w *wendler531BBB) Write(writer *csv.Writer) {
 			// Output rows for 5x10 lift
 			tm := float32(0.6)
 			wt := platecalc.RoundUpToNearest(float32(w2)*tm, 5)
-			ps := platecalc.BestSolution(w.tree, []int{wt}, w.maxDistance)
+			ps := platecalc.BestSolution(w.tree, []int{wt}, w.maxDistance, w.debug)
 			if plates == nil {
 				log.Fatalf("no solution found for: %v weight=%v", lift2, w2)
 			}
