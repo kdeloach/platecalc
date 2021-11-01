@@ -33,23 +33,17 @@ func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings, maxDi
 
 func (w *wendler531BBB) Write(writer *csv.Writer) {
 	tms := [][]float32{
-		{.65, .75, .85, .65},
-		{.7, .8, .9, .7},
-		{.75, .85, .95, .75},
-	}
-	sets := [][]int{
-		{1, 1, 1, 5},
-		{1, 1, 1, 5},
-		{1, 1, 1, 5},
+		{.65, .75, .85},
+		{.7, .8, .9},
+		{.75, .85, .95},
 	}
 	reps := [][]int{
-		{5, 5, 5, 5},
-		{3, 3, 3, 5},
-		{5, 3, 1, 5},
+		{5, 5, 5},
+		{3, 3, 3},
+		{5, 3, 1},
 	}
 
 	lifts1 := []string{"Press", "Deadlift", "Bench", "Squat"}
-	lifts2 := []string{"Bench", "Squat", "Press", "Deadlift"}
 
 	// Calculate training max from 90% of 1 rep max
 	weights := map[string]int{
@@ -68,10 +62,8 @@ func (w *wendler531BBB) Write(writer *csv.Writer) {
 	for week := 0; week < 3; week++ {
 		for day := 0; day < 4; day++ {
 			lift1 := lifts1[day]
-			lift2 := lifts2[day]
 
 			w1 := weights[lift1]
-			w2 := weights[lift2]
 
 			// Find optimal sequence of plate changes for 5/3/1 lift
 			setWeights := make([]int, 0)
@@ -87,23 +79,22 @@ func (w *wendler531BBB) Write(writer *csv.Writer) {
 			}
 
 			// Output rows for 5/3/1 lift
-			for i := 0; i < 4; i++ {
-				s := sets[week][i]
+			for i := 0; i < 3; i++ {
 				r := reps[week][i]
 				tm := tms[week][i]
 				ps := plates[i]
 				wt := setWeights[i]
-				writeRow(writer, lift1, week, day, tm, wt, ps, s, r)
+				writeRow(writer, lift1, week, day, tm, wt, ps, 1, r)
 			}
 
 			// Output rows for 5x10 lift
 			tm := float32(0.6)
-			wt := platecalc.RoundUpToNearest(float32(w2)*tm, 5)
+			wt := platecalc.RoundUpToNearest(float32(w1)*tm, 5)
 			ps := platecalc.BestSolution(w.tree, []int{wt}, w.maxDistance, w.debug)
 			if plates == nil {
-				log.Fatalf("no solution found for: %v weight=%v", lift2, w2)
+				log.Fatalf("no solution found for: %v weight=%v", lift1, w2)
 			}
-			writeRow(writer, lift2, week, day, tm, wt, ps[0], 5, 10)
+			writeRow(writer, lift1, week, day, tm, wt, ps[0], 5, 10)
 		}
 	}
 }
