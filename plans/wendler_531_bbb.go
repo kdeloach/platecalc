@@ -13,111 +13,105 @@ type WorkoutPlanSettings struct {
 	DeadliftRepMax int `yaml:"DeadliftRepMax"`
 	PressRepMax    int `yaml:"PressRepMax"`
 	BenchRepMax    int `yaml:"BenchRepMax"`
+	PlateCalcFn    PlateCalcFunction
+}
+
+type PlateCalcFunction func(setWeights []int) []*platecalc.Tree
+
+func (settings *WorkoutPlanSettings) trainingMax(liftName string) int {
+	switch liftName {
+	case "Squat":
+		return platecalc.RoundUpToNearest(float32(settings.SquatRepMax)*.9, 5)
+	case "Deadlift":
+		return platecalc.RoundUpToNearest(float32(settings.DeadliftRepMax)*.9, 5)
+	case "Press":
+		return platecalc.RoundUpToNearest(float32(settings.PressRepMax)*.9, 5)
+	case "Bench":
+		return platecalc.RoundUpToNearest(float32(settings.BenchRepMax)*.9, 5)
+	}
+	log.Fatalf("unknown lift name: %v", liftName) // unreachable
+	return 0
 }
 
 type wendler531BBB struct {
-	tree        *platecalc.Tree
-	settings    *WorkoutPlanSettings
-	maxDistance int
-	debug       bool
+	settings *WorkoutPlanSettings
 }
 
-func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings, maxDistance int, debug bool) *wendler531BBB {
+type wendler531BBBPlanWriter struct {
+	*csv.Writer
+	plan *wendler531BBB
+}
+
+func NewWendler531BBB(settings *WorkoutPlanSettings) *wendler531BBB {
 	return &wendler531BBB{
-		tree:        tree,
-		settings:    settings,
-		maxDistance: maxDistance,
-		debug:       debug,
+		settings: settings,
 	}
 }
 
-func (w *wendler531BBB) Write(writer *csv.Writer) {
-	tms := [][]float32{
-		{.65, .75, .85, .65},
-		{.7, .8, .9, .7},
-		{.75, .85, .95, .75},
+func (plan *wendler531BBB) Write(w *csv.Writer) {
+	pw := &wendler531BBBPlanWriter{
+		Writer: w,
+		plan:   plan,
 	}
-	sets := [][]int{
-		{1, 1, 1, 5},
-		{1, 1, 1, 5},
-		{1, 1, 1, 5},
-	}
-	reps := [][]int{
-		{5, 5, 5, 5},
-		{3, 3, 3, 5},
-		{5, 3, 1, 5},
+	pw.writeHeader()
+	pw.writeWeek(1, []float32{0.65, 0.75, 0.85, 0.60})
+	pw.writeWeek(2, []float32{0.70, 0.80, 0.90, 0.60})
+	pw.writeWeek(3, []float32{0.75, 0.85, 0.95, 0.60})
+}
+
+func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
+	pw.writeDay("Press", week, 1, tmPercs)
+	pw.writeDay("Deadlift", week, 2, tmPercs)
+	pw.writeDay("Bench", week, 3, tmPercs)
+	pw.writeDay("Squat", week, 4, tmPercs)
+}
+
+func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPercs []float32) {
+	tm := pw.plan.settings.trainingMax(liftName)
+	setWeights := []int{
+		platecalc.RoundUpToNearest(float32(tm)*tmPercs[0], 5),
+		platecalc.RoundUpToNearest(float32(tm)*tmPercs[1], 5),
+		platecalc.RoundUpToNearest(float32(tm)*tmPercs[2], 5),
+		platecalc.RoundUpToNearest(float32(tm)*tmPercs[3], 5),
 	}
 
-	lifts1 := []string{"Press", "Deadlift", "Bench", "Squat"}
-	lifts2 := []string{"Bench", "Squat", "Press", "Deadlift"}
-
-	// Calculate training max from 90% of 1 rep max
-	weights := map[string]int{
-		"Squat":    platecalc.RoundUpToNearest(float32(w.settings.SquatRepMax)*.9, 5),
-		"Deadlift": platecalc.RoundUpToNearest(float32(w.settings.DeadliftRepMax)*.9, 5),
-		"Press":    platecalc.RoundUpToNearest(float32(w.settings.PressRepMax)*.9, 5),
-		"Bench":    platecalc.RoundUpToNearest(float32(w.settings.BenchRepMax)*.9, 5),
+	plates := pw.plan.settings.PlateCalcFn(setWeights)
+	if plates == nil {
+		log.Fatalf("no solution found for: %v setWeights=%v", liftName, setWeights)
 	}
 
-	// Output header
-	writer.Write([]string{
+	var reps []int
+	if week == 2 {
+		reps = []int{3, 3, 3}
+	} else if week == 3 {
+		reps = []int{5, 3, 1}
+	} else {
+		reps = []int{5, 5, 5}
+	}
+
+	pw.writeRow(liftName, week, day, tmPercs[0], setWeights[0], plates[0], 1, reps[0])
+	pw.writeRow(liftName, week, day, tmPercs[1], setWeights[1], plates[1], 1, reps[1])
+	pw.writeRow(liftName, week, day, tmPercs[2], setWeights[2], plates[2], 1, reps[2])
+	pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 10)
+}
+
+func (pw *wendler531BBBPlanWriter) writeHeader() {
+	pw.Write([]string{
 		"Lift", "Week", "Day", "TM %", "Weight", "Plates", "Sets", "Reps",
 	})
-	writer.Flush()
-
-	for week := 0; week < 3; week++ {
-		for day := 0; day < 4; day++ {
-			lift1 := lifts1[day]
-			lift2 := lifts2[day]
-
-			w1 := weights[lift1]
-			w2 := weights[lift2]
-
-			// Find optimal sequence of plate changes for 5/3/1 lift
-			setWeights := make([]int, 0)
-			for i := 0; i < 4; i++ {
-				tm := tms[week][i]
-				wt := platecalc.RoundUpToNearest(float32(w1)*tm, 5)
-				setWeights = append(setWeights, wt)
-			}
-
-			plates := platecalc.BestSolution(w.tree, setWeights, w.maxDistance, w.debug)
-			if plates == nil {
-				log.Fatalf("no solution found for: %v weight=%v", lift1, w1)
-			}
-
-			// Output rows for 5/3/1 lift
-			for i := 0; i < 4; i++ {
-				s := sets[week][i]
-				r := reps[week][i]
-				tm := tms[week][i]
-				ps := plates[i]
-				wt := setWeights[i]
-				writeRow(writer, lift1, week, day, tm, wt, ps, s, r)
-			}
-
-			// Output rows for 5x10 lift
-			tm := float32(0.6)
-			wt := platecalc.RoundUpToNearest(float32(w2)*tm, 5)
-			ps := platecalc.BestSolution(w.tree, []int{wt}, w.maxDistance, w.debug)
-			if plates == nil {
-				log.Fatalf("no solution found for: %v weight=%v", lift2, w2)
-			}
-			writeRow(writer, lift2, week, day, tm, wt, ps[0], 5, 10)
-		}
-	}
+	pw.Flush()
 }
 
-func writeRow(writer *csv.Writer, lift string, week int, day int, tm float32, wt int, plates *platecalc.Tree, sets int, reps int) {
-	writer.Write([]string{
-		lift,
-		fmt.Sprintf("%v", week+1),
-		fmt.Sprintf("%v", day+1),
-		fmt.Sprintf("%v%%", int(tm*100)),
-		fmt.Sprintf("%v", wt),
+func (pw *wendler531BBBPlanWriter) writeRow(liftName string, week int, day int, tmPerc float32, weight int, plates *platecalc.Tree, sets int, reps int) {
+	pw.Write([]string{
+		liftName,
+		fmt.Sprintf("%v", week),
+		fmt.Sprintf("%v", day),
+		fmt.Sprintf("%v%%", int(tmPerc*100)),
+		fmt.Sprintf("%v", weight),
 		plates.String(),
 		fmt.Sprintf("%v", sets),
 		fmt.Sprintf("%v", reps),
 	})
-	writer.Flush()
+	pw.Flush()
 }

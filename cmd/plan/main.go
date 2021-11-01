@@ -44,10 +44,14 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
+	settings.PlateCalcFn = func(setWeights []int) []*platecalc.Tree {
+		return platecalc.BestSolution(tree, setWeights, *maxDistance, *debug)
+	}
+
+	plan := plans.NewWendler531BBB(settings)
+
 	w := csv.NewWriter(os.Stdout)
 	w.Comma = ';'
-
-	plan := plans.NewWendler531BBB(tree, settings, *maxDistance, *debug)
 	plan.Write(w)
 }
 
