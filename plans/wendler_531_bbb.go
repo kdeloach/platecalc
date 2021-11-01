@@ -13,7 +13,10 @@ type WorkoutPlanSettings struct {
 	DeadliftRepMax int `yaml:"DeadliftRepMax"`
 	PressRepMax    int `yaml:"PressRepMax"`
 	BenchRepMax    int `yaml:"BenchRepMax"`
+	PlateCalcFn    PlateCalcFunction
 }
+
+type PlateCalcFunction func(setWeights []int) []*platecalc.Tree
 
 func (settings *WorkoutPlanSettings) trainingMax(liftName string) int {
 	switch liftName {
@@ -31,10 +34,7 @@ func (settings *WorkoutPlanSettings) trainingMax(liftName string) int {
 }
 
 type wendler531BBB struct {
-	tree        *platecalc.Tree
-	settings    *WorkoutPlanSettings
-	maxDistance int
-	debug       bool
+	settings *WorkoutPlanSettings
 }
 
 type wendler531BBBPlanWriter struct {
@@ -42,12 +42,9 @@ type wendler531BBBPlanWriter struct {
 	plan *wendler531BBB
 }
 
-func NewWendler531BBB(tree *platecalc.Tree, settings *WorkoutPlanSettings, maxDistance int, debug bool) *wendler531BBB {
+func NewWendler531BBB(settings *WorkoutPlanSettings) *wendler531BBB {
 	return &wendler531BBB{
-		tree:        tree,
-		settings:    settings,
-		maxDistance: maxDistance,
-		debug:       debug,
+		settings: settings,
 	}
 }
 
@@ -78,7 +75,7 @@ func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPe
 		platecalc.RoundUpToNearest(float32(tm)*tmPercs[3], 5),
 	}
 
-	plates := platecalc.BestSolution(pw.plan.tree, setWeights, pw.plan.maxDistance, pw.plan.debug)
+	plates := pw.plan.settings.PlateCalcFn(setWeights)
 	if plates == nil {
 		log.Fatalf("no solution found for: %v setWeights=%v", liftName, setWeights)
 	}
