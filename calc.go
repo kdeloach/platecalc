@@ -5,26 +5,33 @@ import (
 	"math"
 )
 
+// Permutations returns every possible combination as tuples of length 1 to N.
+// Ex: [1, 2, 3] -> [[1], [1,2], [1,2,3], [1,3,2], [2], [2,1], ...]
 func Permutations(plates ...float32) [][]float32 {
-	platesColl := make([][]float32, 0)
+	tuples := make([][]float32, 0)
 	if len(plates) == 0 {
-		return platesColl
+		return tuples
 	}
 	for i, p := range plates {
-		subPlates := make([]float32, 0, len(plates)-1)
-		subPlates = append(subPlates, plates[:i]...)
-		subPlates = append(subPlates, plates[i+1:]...)
+		tuples = append(tuples, []float32{p})
 
-		platesColl = append(platesColl, []float32{p})
+		// create new list with p removed
+		newPlates := make([]float32, 0, len(plates)-1)
+		newPlates = append(newPlates, plates[:i]...)
+		newPlates = append(newPlates, plates[i+1:]...)
 
-		for _, pz := range Permutations(subPlates...) {
-			perm := append([]float32{p}, pz...)
-			platesColl = append(platesColl, perm)
+		// prefix each child tuple with p
+		for _, tup := range Permutations(newPlates...) {
+			newTuple := append([]float32{p}, tup...)
+			tuples = append(tuples, newTuple)
 		}
 	}
-	return platesColl
+	return tuples
 }
 
+// BestSolution returns the optimal sequence of plate changes for setWeights
+// by walking the permutation tree and selecting the closest nodes with the
+// lowest combined score.
 func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*Tree {
 	if len(setWeights) == 0 {
 		return nil
@@ -80,6 +87,23 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 	})
 
 	return solution
+}
+
+// SimpleSolution returns the best plate arrangement for each individual weight
+// in setWeights.
+func SimpleSolution(tree *Tree, setWeights []int, debug bool) []*Tree {
+	solution := make([]*Tree, 0)
+
+	for _, weight := range setWeights {
+		best := BestSolution(tree, []int{weight}, 0, debug)
+		if best == nil {
+			return nil
+		}
+		solution = append(solution, best[0])
+	}
+
+	return solution
+
 }
 
 func RoundUpToNearest(n float32, inc int) int {
