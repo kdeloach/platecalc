@@ -57,6 +57,7 @@ func (plan *wendler531BBB) Write(w *csv.Writer) {
 	pw.writeWeek(1, []float32{0.65, 0.75, 0.85, 0.60})
 	pw.writeWeek(2, []float32{0.70, 0.80, 0.90, 0.60})
 	pw.writeWeek(3, []float32{0.75, 0.85, 0.95, 0.60})
+	pw.writeWeek(4, []float32{0.40, 0.50, 0.60, 0.60})
 }
 
 func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
