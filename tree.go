@@ -29,7 +29,14 @@ func (t *Tree) Score() int {
 	if t.Parent == nil {
 		return 0
 	}
-	return t.Parent.Score() + t.Depth*int(t.Value)
+
+	// scale up heavier plates; prefer lighter plates
+	scale := t.Value / 10
+	if scale < 1 {
+		scale = 1
+	}
+
+	return t.Parent.Score() + t.Depth*int(t.Value*scale)
 }
 
 func (t *Tree) TotalWeight() int {

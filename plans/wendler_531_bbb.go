@@ -29,7 +29,7 @@ func (settings *WorkoutPlanSettings) trainingMax(liftName string) int {
 	case "Bench":
 		return platecalc.RoundUpToNearest(float32(settings.BenchRepMax)*.9, 5)
 	}
-	log.Fatalf("unknown lift name: %v", liftName) // unreachable
+	log.Fatalf("unknown lift name: %v", liftName)
 	return 0
 }
 

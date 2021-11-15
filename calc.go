@@ -67,11 +67,11 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 					copy(nodes, prevNodes)
 					nodes = append(nodes, node)
 
-					// score := prevScore + node.Score()*dist
-					// fmt.Printf("%v + %v * %v = %v\n", prevScore, node.Score(), dist, score)
+					// Optimize for number of plates added/removed by weight
+					score := prevScore + node.Score()*dist
 
-					// Optimize for number of plates added/removed
-					score := prevScore + dist
+					// Optimize for number of plates added/removed by count
+					// score := prevScore + dist
 
 					oldNextFn(score, nodes)
 				}
