@@ -9,11 +9,12 @@ import (
 )
 
 type WorkoutPlanSettings struct {
-	SquatRepMax    int `yaml:"SquatRepMax"`
-	DeadliftRepMax int `yaml:"DeadliftRepMax"`
-	PressRepMax    int `yaml:"PressRepMax"`
-	BenchRepMax    int `yaml:"BenchRepMax"`
-	PlateCalcFn    PlateCalcFunction
+	SquatRepMax        int `yaml:"SquatRepMax"`
+	DeadliftRepMax     int `yaml:"DeadliftRepMax"`
+	PressRepMax        int `yaml:"PressRepMax"`
+	BenchRepMax        int `yaml:"BenchRepMax"`
+	TrainingMaxPercent int `yaml:"TrainingMaxPercent"`
+	PlateCalcFn        PlateCalcFunction
 }
 
 type PlateCalcFunction func(setWeights []int) []*platecalc.Tree
@@ -69,7 +70,8 @@ func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
 
 func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPercs []float32) {
 	repMax := pw.plan.settings.repMax(liftName)
-	tm := float32(platecalc.RoundUpToNearest(float32(repMax)*0.9, 5))
+	tmPerc := float32(pw.plan.settings.TrainingMaxPercent) / 100
+	tm := float32(platecalc.RoundUpToNearest(float32(repMax)*tmPerc, 5))
 
 	setWeights := []int{
 		platecalc.RoundUpToNearest(tm*tmPercs[0], 5),
