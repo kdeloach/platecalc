@@ -71,15 +71,14 @@ func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
 }
 
 func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPercs []float32) {
-	repMax := pw.plan.settings.repMax(liftName)
+	repMax := float32(pw.plan.settings.repMax(liftName))
 	tmPerc := float32(pw.plan.settings.TrainingMaxPercent) / 100
-	tm := float32(platecalc.RoundUpToNearest(float32(repMax)*tmPerc, 5))
 
 	setWeights := []int{
-		platecalc.RoundUpToNearest(tm*tmPercs[0], 5),
-		platecalc.RoundUpToNearest(tm*tmPercs[1], 5),
-		platecalc.RoundUpToNearest(tm*tmPercs[2], 5),
-		platecalc.RoundUpToNearest(tm*tmPercs[3], 5),
+		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[0], 5),
+		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[1], 5),
+		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[2], 5),
+		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[3], 5),
 	}
 
 	plates := pw.plan.settings.PlateCalcFn(setWeights)
