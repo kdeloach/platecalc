@@ -9,11 +9,12 @@ import (
 )
 
 type WorkoutPlanSettings struct {
-	SquatRepMax        int `yaml:"SquatRepMax"`
-	DeadliftRepMax     int `yaml:"DeadliftRepMax"`
-	PressRepMax        int `yaml:"PressRepMax"`
-	BenchRepMax        int `yaml:"BenchRepMax"`
-	TrainingMaxPercent int `yaml:"TrainingMaxPercent"`
+	SquatRepMax        int  `yaml:"SquatRepMax"`
+	DeadliftRepMax     int  `yaml:"DeadliftRepMax"`
+	PressRepMax        int  `yaml:"PressRepMax"`
+	BenchRepMax        int  `yaml:"BenchRepMax"`
+	TrainingMaxPercent int  `yaml:"TrainingMaxPercent"`
+	Progression5s      bool `yaml:"Progression5s"`
 	PlateCalcFn        PlateCalcFunction
 }
 
@@ -54,6 +55,7 @@ func (plan *wendler531BBB) Write(w *csv.Writer) {
 		Writer: w,
 		plan:   plan,
 	}
+
 	pw.writeHeader()
 	pw.writeWeek(1, []float32{0.65, 0.75, 0.85, 0.60})
 	pw.writeWeek(2, []float32{0.70, 0.80, 0.90, 0.60})
@@ -86,17 +88,25 @@ func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPe
 	}
 
 	var reps []int
-	if week == 2 {
-		reps = []int{3, 3, 3}
-	} else if week == 3 {
-		reps = []int{5, 3, 1}
-	} else {
+
+	if pw.plan.settings.Progression5s {
 		reps = []int{5, 5, 5}
+	} else {
+		if week == 2 {
+			reps = []int{3, 3, 3}
+		} else if week == 3 {
+			reps = []int{5, 3, 1}
+		} else {
+			reps = []int{5, 5, 5}
+		}
 	}
 
+	// 5/3/1 lifts
 	pw.writeRow(liftName, week, day, tmPercs[0], setWeights[0], plates[0], 1, reps[0])
 	pw.writeRow(liftName, week, day, tmPercs[1], setWeights[1], plates[1], 1, reps[1])
 	pw.writeRow(liftName, week, day, tmPercs[2], setWeights[2], plates[2], 1, reps[2])
+
+	// BBB 5x10 supplemental lift
 	pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 10)
 }
 
