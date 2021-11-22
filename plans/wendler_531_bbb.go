@@ -18,16 +18,16 @@ type WorkoutPlanSettings struct {
 
 type PlateCalcFunction func(setWeights []int) []*platecalc.Tree
 
-func (settings *WorkoutPlanSettings) trainingMax(liftName string) int {
+func (settings *WorkoutPlanSettings) repMax(liftName string) int {
 	switch liftName {
 	case "Squat":
-		return platecalc.RoundUpToNearest(float32(settings.SquatRepMax)*.9, 5)
+		return settings.SquatRepMax
 	case "Deadlift":
-		return platecalc.RoundUpToNearest(float32(settings.DeadliftRepMax)*.9, 5)
+		return settings.DeadliftRepMax
 	case "Press":
-		return platecalc.RoundUpToNearest(float32(settings.PressRepMax)*.9, 5)
+		return settings.PressRepMax
 	case "Bench":
-		return platecalc.RoundUpToNearest(float32(settings.BenchRepMax)*.9, 5)
+		return settings.BenchRepMax
 	}
 	log.Fatalf("unknown lift name: %v", liftName)
 	return 0
@@ -68,12 +68,14 @@ func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
 }
 
 func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPercs []float32) {
-	tm := pw.plan.settings.trainingMax(liftName)
+	repMax := pw.plan.settings.repMax(liftName)
+	tm := float32(platecalc.RoundUpToNearest(float32(repMax)*0.9, 5))
+
 	setWeights := []int{
-		platecalc.RoundUpToNearest(float32(tm)*tmPercs[0], 5),
-		platecalc.RoundUpToNearest(float32(tm)*tmPercs[1], 5),
-		platecalc.RoundUpToNearest(float32(tm)*tmPercs[2], 5),
-		platecalc.RoundUpToNearest(float32(tm)*tmPercs[3], 5),
+		platecalc.RoundUpToNearest(tm*tmPercs[0], 5),
+		platecalc.RoundUpToNearest(tm*tmPercs[1], 5),
+		platecalc.RoundUpToNearest(tm*tmPercs[2], 5),
+		platecalc.RoundUpToNearest(tm*tmPercs[3], 5),
 	}
 
 	plates := pw.plan.settings.PlateCalcFn(setWeights)
