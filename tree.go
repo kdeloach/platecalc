@@ -96,10 +96,9 @@ type WalkNearbyTreeFn func(*Tree, int, bool)
 
 func (t *Tree) WalkNearby(maxDistance int, fn WalkNearbyTreeFn) {
 	seen := make(map[*Tree]bool)
-	directAncestor := make(map[*Tree]bool)
 
 	var walk func(*Tree, int, bool)
-	walk = func(t *Tree, distance int, isDirectDescendant bool) {
+	walk = func(t *Tree, distance int, isDirectRelative bool) {
 		if t == nil || distance > maxDistance {
 			return
 		}
@@ -107,20 +106,17 @@ func (t *Tree) WalkNearby(maxDistance int, fn WalkNearbyTreeFn) {
 			return
 		}
 
-		_, isDirectAncestor := directAncestor[t]
-		isDirectRelative := isDirectDescendant || isDirectAncestor
-
 		fn(t, distance, isDirectRelative)
 		seen[t] = true
 
-		for _, child := range t.Children {
-			walk(child, distance+1, isDirectDescendant)
+		if t.Parent == nil {
+			isDirectRelative = false
 		}
-		walk(t.Parent, distance+1, false)
-	}
 
-	for p := t.Parent; p != nil; p = p.Parent {
-		directAncestor[p] = true
+		for _, child := range t.Children {
+			walk(child, distance+1, isDirectRelative)
+		}
+		walk(t.Parent, distance+1, isDirectRelative)
 	}
 
 	walk(t, 0, true)
