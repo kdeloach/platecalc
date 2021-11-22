@@ -40,7 +40,7 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 	bestScore := math.MaxInt32
 	var solution []*Tree
 
-	foundSolution := func(score int, nodes []*Tree) {
+	foundSolution := func(score int, nodes []*Tree, direct bool) {
 		if score < bestScore {
 			bestScore = score
 			solution = nodes
@@ -48,7 +48,7 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 				for _, n := range nodes {
 					fmt.Printf("%3v: %v (score=%v)\n", n.TotalWeight(), n, n.Score())
 				}
-				fmt.Printf("total=%v\n\n", score)
+				fmt.Printf("total=%v direct=%v\n\n", score, direct)
 			}
 		}
 	}
@@ -59,21 +59,26 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 	for i := len(tail) - 1; i >= 0; i-- {
 		weight := tail[i]
 		oldNextFn := nextFn
-		nextFn = func(prevScore int, prevNodes []*Tree) {
+		nextFn = func(prevScore int, prevNodes []*Tree, prevDirect bool) {
 			prevNode := prevNodes[len(prevNodes)-1]
-			prevNode.WalkNearby(maxDistance, func(node *Tree, dist int) {
+			prevNode.WalkNearby(maxDistance, func(node *Tree, dist int, isDirectRelative bool) {
 				if node.TotalWeight() == weight {
 					nodes := make([]*Tree, len(prevNodes))
 					copy(nodes, prevNodes)
 					nodes = append(nodes, node)
 
+					handicapFactor := 1
+					if !isDirectRelative {
+						handicapFactor = 2
+					}
+
 					// Optimize for number of plates added/removed by weight
-					score := prevScore + node.Score()*dist
+					score := prevScore + node.Score()*dist*handicapFactor
 
 					// Optimize for number of plates added/removed by count
 					// score := prevScore + dist
 
-					oldNextFn(score, nodes)
+					oldNextFn(score, nodes, isDirectRelative)
 				}
 			})
 		}
@@ -82,7 +87,7 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 	tree.Walk(func(node *Tree) {
 		if node.TotalWeight() == head {
 			nodes := []*Tree{node}
-			nextFn(node.Score(), nodes)
+			nextFn(node.Score(), nodes, true)
 		}
 	})
 
