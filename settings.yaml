@@ -1,0 +1,6 @@
+SquatRepMax: 330
+DeadliftRepMax: 340
+PressRepMax: 160
+BenchRepMax: 220
+TrainingMaxPercent: 90
+Progression5s: true
