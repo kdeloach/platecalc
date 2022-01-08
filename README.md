@@ -27,20 +27,29 @@ Usage: calc [weight:int]+
         use simple plate orderings
 ```
 
-Example to calculate plates needed to lift `110`:
+For example, compare the following runs:
 
 ```sh
-$ go run ./cmd/calc/ 110
-110: 25, 5, 2.5  # 110 = (25+5+2.5)*2 + 45(bar)
+$ go run ./cmd/calc/ 100
+100: 10, 10, 5, 2.5
+
+$ go run ./cmd/calc/ 120
+120: 25, 10, 2.5
+
+$ go run ./cmd/calc/ 100 120
+100: 25, 2.5
+120: 25, 2.5, 10
 ```
 
-Notice how the plate order for `110` shifts if it's preceded by `100` so you
-only need to add 1 plate instead of removing 2 then adding 1:
+Notice how the plates needed for `100` changes when followed by `120`. Also,
+notice how the plate order for `120` changes when preceded by `100`.
+
+Compare this to the naive plan which disables optimizations:
 
 ```sh
-$ go run ./cmd/calc/ 100 110
-100: 25, 2.5
-110: 25, 2.5, 5
+$ go run ./cmd/calc/ -simple 100 120
+100: 10, 10, 5, 2.5
+120: 25, 10, 2.5
 ```
 
 Example FSL (first-set-last) workout sets:
@@ -69,7 +78,18 @@ $ go run ./cmd/calc/ -simple 100 125 150 200 100
 ### plan
 
 Generate workout plan based on [Jim Wendler's 5/3/1 BBB](https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big)
-program in CSV format. The plan is based on your 1RM (one-rep max) defined in a setting file.
+program in CSV format. The plan is based on your 1RM (one-rep max) defined in a
+setting file.
+
+Plan details:
+- 4 day split: Press, Deadlift, Bench, Squat
+- 4 week cycle (3 weeks + deload week)
+- training max (TM) is a percent of 1RM (`TrainingMaxPercent` in settings)
+- week 1: 65/75/85/60 (percent of TM)
+- week 2: 70/80/90/60
+- week 3: 75/85/95/60
+- week 4: 40/50/60/60
+- reps are 5/3/1 based on week or 5/5/5 if `Progression5s` is enabled
 
 Usage:
 
@@ -91,7 +111,7 @@ Usage of /tmp/go-build1991805482/b001/exe/plan:
 Example:
 
 ```sh
-$ go run ./cmd/plan/ -file settings.yaml
+$ go run ./cmd/plan/ -file profile.yaml
 Lift;Week;Day;TM %;Weight;Plates;Sets;Reps
 Press;1;1;65%;90;10, 10, 2.5;1;5
 Press;1;1;75%;105;10, 10, 5, 5;1;5
@@ -104,11 +124,13 @@ Deadlift;1;2;60%;175;45, 10, 5, 5;5;10
 ...
 ```
 
-Format of `settings.yaml`:
+Format of `profile.yaml`:
 
 ```yaml
 SquatRepMax: 300
 DeadliftRepMax: 310
 PressRepMax: 145
 BenchRepMax: 205
+TrainingMaxPercent: 90
+Progression5s: true
 ```
