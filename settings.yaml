@@ -1,6 +1,17 @@
-SquatRepMax: 330
-DeadliftRepMax: 340
-PressRepMax: 160
-BenchRepMax: 220
+PressRepMax: 150
+DeadliftRepMax: 280
+BenchRepMax: 200
+SquatRepMax: 265
+
+PressPR: "140x5"
+DeadliftPR: "295x1"
+BenchPR: "190x5"
+SquatPR: "270x3"
+
+PressGoal: 135  # Reached!
+DeadliftGoal: 405
+BenchGoal: 225
+SquatGoal: 315
+
 TrainingMaxPercent: 90
 Progression5s: true
