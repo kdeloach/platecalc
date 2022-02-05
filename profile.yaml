@@ -2,14 +2,14 @@ TrainingMaxPercent: 90
 Progression5s: true
 
 PressRepMax: 125
-DeadliftRepMax: 300
 BenchRepMax: 190
 SquatRepMax: 255
+DeadliftRepMax: 300
 
 PressPR: "140x5"    # Intermediate
-DeadliftPR: "295x1" # Novice
 BenchPR: "190x5"    # Intermediate
 SquatPR: "270x3"    # Intermediate
+DeadliftPR: "295x1" # Novice
 
 # Goals based on bodyweight: 160
 # https://strengthlevel.com/strength-standards
@@ -17,21 +17,21 @@ SquatPR: "270x3"    # Intermediate
 Goals:
   Novice:
     Press: 90      # bodyweight * 0.56
-    Deadlift: 228  # bodyweight * 1.42
     Bench: 140     # bodyweight * 0.88
     Squat: 190     # bodyweight * 1.19
+    Deadlift: 228  # bodyweight * 1.42
   Intermediate:
     Press: 125     # bodyweight * 0.78
-    Deadlift: 302  # bodyweight * 1.89
     Bench: 193     # bodyweight * 1.2
     Squat: 256     # bodyweight * 1.6
+    Deadlift: 302  # bodyweight * 1.89
   Advanced:
     Press: 166     # bodyweight * 1.04
-    Deadlift: 388  # bodyweight * 2.42
     Bench: 252     # bodyweight * 1.57
     Squat: 333     # bodyweight * 2.08
+    Deadlift: 388  # bodyweight * 2.42
   Plates1234:
     Press: 135     # 1 plate
-    Deadlift: 405  # 4 plates
     Bench: 225     # 2 plates
     Squat: 315     # 3 plates
+    Deadlift: 405  # 4 plates
