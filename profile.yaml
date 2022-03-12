@@ -1,10 +1,10 @@
 TrainingMaxPercent: 90
 Progression5s: true
 
-PressRepMax: 120
-BenchRepMax: 175
-SquatRepMax: 240
-DeadliftRepMax: 280
+PressRepMax: 125
+BenchRepMax: 180
+SquatRepMax: 250
+DeadliftRepMax: 290
 
 PressPR: "140x5"    # Intermediate
 BenchPR: "190x5"    # Intermediate
@@ -13,7 +13,6 @@ DeadliftPR: "295x1" # Novice
 
 # Goals based on bodyweight: 160
 # https://strengthlevel.com/strength-standards
-
 Goals:
   Novice:
     Press: 90      # bodyweight * 0.56
