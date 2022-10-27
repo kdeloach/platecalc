@@ -1,10 +1,10 @@
 TrainingMaxPercent: 90
 Progression5s: true
 
-PressRepMax: 140
-BenchRepMax: 195
-SquatRepMax: 280
-DeadliftRepMax: 320
+PressRepMax: 130
+BenchRepMax: 185
+SquatRepMax: 260
+DeadliftRepMax: 300
 
 PressPR: "140x5"    # Intermediate
 BenchPR: "190x5"    # Intermediate
