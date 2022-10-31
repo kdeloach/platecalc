@@ -62,7 +62,6 @@ func (pw *strongliftsPlanWriter) writeWorkoutB(week, day int) {
 
 func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	repMax := float32(pw.plan.settings.repMax(liftName))
-	tmPercs := []float32{0.70, 0.80, 0.90, 1.00}
 	tmPerc := float32(pw.plan.settings.TrainingMaxPercent) / 100
 
 	// increase weight for bench and press half as much since they
@@ -76,10 +75,7 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	inc := float32(float32((week-1)*3+(day-1)) * (5 * rate))
 
 	setWeights := []int{
-		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[0]+inc, 5),
-		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[1]+inc, 5),
-		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[2]+inc, 5),
-		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[3]+inc, 5),
+		platecalc.RoundUpToNearest(repMax*tmPerc+inc, 5),
 	}
 
 	plates := pw.plan.settings.PlateCalcFn(setWeights)
@@ -87,34 +83,30 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 		log.Fatalf("no solution found for: %v setWeights=%v", liftName, setWeights)
 	}
 
-	pw.writeRow(liftName, week, day, tmPercs[0], setWeights[0], plates[0], 1, 5)
-	pw.writeRow(liftName, week, day, tmPercs[1], setWeights[1], plates[1], 1, 5)
-	pw.writeRow(liftName, week, day, tmPercs[2], setWeights[2], plates[2], 1, 5)
-
 	if liftName == DEADLIFT {
-		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 1, 5)
+		pw.writeRow(liftName, week, day, tmPerc, setWeights[0], plates[0], 1, 5)
 	} else {
-		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 5)
+		pw.writeRow(liftName, week, day, tmPerc, setWeights[0], plates[0], 5, 5)
 	}
 }
 
 func (pw *strongliftsPlanWriter) writeHeader() {
 	pw.Write([]string{
-		"Lift", "Week", "Day", "TM %", "Weight", "Plates", "Sets", "Reps",
+		"Week", "Day", "Lift", "Weight", "Plates", "Sets", "Reps", "TM %",
 	})
 	pw.Flush()
 }
 
 func (pw *strongliftsPlanWriter) writeRow(liftName string, week int, day int, tmPerc float32, weight int, plates *platecalc.Tree, sets int, reps int) {
 	pw.Write([]string{
-		liftName,
 		fmt.Sprintf("%v", week),
 		fmt.Sprintf("%v", day),
-		fmt.Sprintf("%v%%", int(tmPerc*100)),
+		liftName,
 		fmt.Sprintf("%v", weight),
 		plates.String(),
 		fmt.Sprintf("%v", sets),
 		fmt.Sprintf("%v", reps),
+		fmt.Sprintf("%v%%", int(tmPerc*100)),
 	})
 	pw.Flush()
 }
