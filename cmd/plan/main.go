@@ -18,7 +18,7 @@ var barWeight = flag.Int("bar", 45, "bar weight")
 var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
 var file = flag.String("file", "", "workout plan settings file")
 var maxDistance = flag.Int("maxdistance", 5, "maximum distance to search tree")
-var delim = flag.String("delim", ";", "output delimiter")
+var delim = flag.String("delim", ",", "output delimiter")
 var debug = flag.Bool("debug", false, "display debug output")
 
 func main() {

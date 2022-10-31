@@ -37,10 +37,10 @@ func (plan *wendler531BBB) Write(w *csv.Writer) {
 }
 
 func (pw *wendler531BBBPlanWriter) writeWeek(week int, tmPercs []float32) {
-	pw.writeDay("Press", week, 1, tmPercs)
-	pw.writeDay("Deadlift", week, 2, tmPercs)
-	pw.writeDay("Bench", week, 3, tmPercs)
-	pw.writeDay("Squat", week, 4, tmPercs)
+	pw.writeDay(PRESS, week, 1, tmPercs)
+	pw.writeDay(DEADLIFT, week, 2, tmPercs)
+	pw.writeDay(BENCH, week, 3, tmPercs)
+	pw.writeDay(SQUAT, week, 4, tmPercs)
 }
 
 func (pw *wendler531BBBPlanWriter) writeDay(liftName string, week, day int, tmPercs []float32) {
