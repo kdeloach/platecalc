@@ -7,6 +7,13 @@ import (
 	"github.com/kdeloach/platecalc"
 )
 
+var (
+	SQUAT    = "Squat"
+	DEADLIFT = "Deadlift"
+	BENCH    = "Bench"
+	PRESS    = "Press"
+)
+
 type WorkoutPlan interface {
 	Write(w *csv.Writer)
 }
@@ -26,13 +33,13 @@ type PlateCalcFunction func(setWeights []int) []*platecalc.Tree
 
 func (settings *WorkoutPlanSettings) repMax(liftName string) int {
 	switch liftName {
-	case "Squat":
+	case SQUAT:
 		return settings.SquatRepMax
-	case "Deadlift":
+	case DEADLIFT:
 		return settings.DeadliftRepMax
-	case "Press":
+	case PRESS:
 		return settings.PressRepMax
-	case "Bench":
+	case BENCH:
 		return settings.BenchRepMax
 	}
 	log.Fatalf("unknown lift name: %v", liftName)

@@ -49,15 +49,15 @@ func (pw *strongliftsPlanWriter) writeWeek(week int) {
 }
 
 func (pw *strongliftsPlanWriter) writeWorkoutA(week, day int) {
-	pw.writeLift("Squat", week, day)
-	pw.writeLift("Bench", week, day)
-	pw.writeLift("Deadlift", week, day)
+	pw.writeLift(SQUAT, week, day)
+	pw.writeLift(BENCH, week, day)
+	pw.writeLift(DEADLIFT, week, day)
 }
 
 func (pw *strongliftsPlanWriter) writeWorkoutB(week, day int) {
-	pw.writeLift("Squat", week, day)
-	pw.writeLift("Press", week, day)
-	pw.writeLift("Deadlift", week, day)
+	pw.writeLift(SQUAT, week, day)
+	pw.writeLift(PRESS, week, day)
+	pw.writeLift(DEADLIFT, week, day)
 }
 
 func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
@@ -68,7 +68,7 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	// increase weight for bench and press half as much since they
 	// only appear on alternating days
 	var rate float32 = 1.0
-	if liftName == "Bench" || liftName == "Press" {
+	if liftName == BENCH || liftName == PRESS {
 		rate = 0.5
 	}
 
@@ -91,7 +91,7 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	pw.writeRow(liftName, week, day, tmPercs[1], setWeights[1], plates[1], 1, 5)
 	pw.writeRow(liftName, week, day, tmPercs[2], setWeights[2], plates[2], 1, 5)
 
-	if liftName == "Deadlift" {
+	if liftName == DEADLIFT {
 		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 1, 5)
 	} else {
 		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 5)
