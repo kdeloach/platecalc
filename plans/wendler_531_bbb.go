@@ -8,13 +8,18 @@ import (
 	"github.com/kdeloach/platecalc"
 )
 
+type WorkoutPlan interface {
+	Write(w *csv.Writer)
+}
+
 type WorkoutPlanSettings struct {
-	SquatRepMax        int  `yaml:"SquatRepMax"`
-	DeadliftRepMax     int  `yaml:"DeadliftRepMax"`
-	PressRepMax        int  `yaml:"PressRepMax"`
-	BenchRepMax        int  `yaml:"BenchRepMax"`
-	TrainingMaxPercent int  `yaml:"TrainingMaxPercent"`
-	Progression5s      bool `yaml:"Progression5s"`
+	Plan               string `yaml:"Plan"`
+	SquatRepMax        int    `yaml:"SquatRepMax"`
+	DeadliftRepMax     int    `yaml:"DeadliftRepMax"`
+	PressRepMax        int    `yaml:"PressRepMax"`
+	BenchRepMax        int    `yaml:"BenchRepMax"`
+	TrainingMaxPercent int    `yaml:"TrainingMaxPercent"`
+	Progression5s      bool   `yaml:"Progression5s"`
 	PlateCalcFn        PlateCalcFunction
 }
 

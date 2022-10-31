@@ -48,7 +48,12 @@ func main() {
 		return platecalc.BestSolution(tree, setWeights, *maxDistance, *debug)
 	}
 
-	plan := plans.NewWendler531BBB(settings)
+	var plan plans.WorkoutPlan
+	if settings.Plan == "Wendler531BBB" {
+		plan = plans.NewWendler531BBB(settings)
+	} else {
+		log.Fatalf("unknown plan: %s (must be Wendler531BBB)\n", settings.Plan)
+	}
 
 	w := csv.NewWriter(os.Stdout)
 	w.Comma = ';'
