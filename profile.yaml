@@ -1,3 +1,5 @@
+Plan: Wendler531BBB
+
 TrainingMaxPercent: 90
 Progression5s: true
 
@@ -6,6 +8,7 @@ BenchRepMax: 185
 SquatRepMax: 260
 DeadliftRepMax: 300
 
+# Personal Records
 PressPR: "140x5"    # Intermediate
 BenchPR: "190x5"    # Intermediate
 SquatPR: "270x3"    # Intermediate
