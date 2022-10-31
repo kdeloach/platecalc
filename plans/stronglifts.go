@@ -62,7 +62,7 @@ func (pw *strongliftsPlanWriter) writeWorkoutB(week, day int) {
 
 func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	repMax := float32(pw.plan.settings.repMax(liftName))
-	tmPercs := []float32{0.60, 0.70, 0.80, 0.90}
+	tmPercs := []float32{0.70, 0.80, 0.90, 1.00}
 	tmPerc := float32(pw.plan.settings.TrainingMaxPercent) / 100
 
 	load := 5
