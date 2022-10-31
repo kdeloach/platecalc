@@ -1,12 +1,14 @@
 Plan: Stronglifts
+TrainingMaxPercent: 100
 
-TrainingMaxPercent: 90
+# Wendler531BBB settings
 Progression5s: true
+# TrainingMaxPercent: 90
 
-PressRepMax: 78
-BenchRepMax: 121
-SquatRepMax: 162
-DeadliftRepMax: 195
+PressRepMax: 70
+BenchRepMax: 95
+SquatRepMax: 135
+DeadliftRepMax: 145
 
 # Personal Records
 PressPR: "140x5"    # Intermediate

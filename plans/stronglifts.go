@@ -65,18 +65,15 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	tmPercs := []float32{0.70, 0.80, 0.90, 1.00}
 	tmPerc := float32(pw.plan.settings.TrainingMaxPercent) / 100
 
-	load := 5
-	if liftName == "Squat" || liftName == "Deadlift" {
-		load = 10
+	// increase weight for bench and press half as much since they
+	// only appear on alternating days
+	var rate float32 = 1.0
+	if liftName == "Bench" || liftName == "Press" {
+		rate = 0.5
 	}
 
-	// Squat Week 1, Day 1 = +0
-	// Squat Week 1, Day 2 = +10
-	// Squat Week 1, Day 3 = +20
-	// Squat Week 2, Day 1 = +30
-	// ...
-	// multiply week by 3 because there are 3 workout days per week
-	inc := float32(((week-1)*3 + (day - 1)) * load)
+	// increase weight by 5 pounds per day
+	inc := float32(float32((week-1)*3+(day-1)) * (5 * rate))
 
 	setWeights := []int{
 		platecalc.RoundUpToNearest(repMax*tmPerc*tmPercs[0]+inc, 5),
@@ -94,9 +91,11 @@ func (pw *strongliftsPlanWriter) writeLift(liftName string, week, day int) {
 	pw.writeRow(liftName, week, day, tmPercs[1], setWeights[1], plates[1], 1, 5)
 	pw.writeRow(liftName, week, day, tmPercs[2], setWeights[2], plates[2], 1, 5)
 
-	// deadlifts reps should be 1x5 but I decided to leave it as 5x5 for
-	// increased volume
-	pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 5)
+	if liftName == "Deadlift" {
+		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 1, 5)
+	} else {
+		pw.writeRow(liftName, week, day, tmPercs[3], setWeights[3], plates[3], 5, 5)
+	}
 }
 
 func (pw *strongliftsPlanWriter) writeHeader() {
