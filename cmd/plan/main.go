@@ -52,6 +52,8 @@ func main() {
 	var plan plans.WorkoutPlan
 	if settings.Plan == "Wendler531BBB" {
 		plan = plans.NewWendler531BBB(settings)
+	} else if settings.Plan == "Stronglifts" {
+		plan = plans.NewStrongliftsPlan(settings)
 	} else {
 		log.Fatalf("unknown plan: %s (must be Wendler531BBB)\n", settings.Plan)
 	}
