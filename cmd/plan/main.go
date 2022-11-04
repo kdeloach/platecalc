@@ -45,8 +45,13 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
+	opts := &platecalc.SolutionOpts{
+		Debug:            *debug,
+		PreferLessPlates: settings.PreferLessPlates,
+	}
+
 	settings.PlateCalcFn = func(setWeights []int) []*platecalc.Tree {
-		return platecalc.BestSolution(tree, setWeights, *maxDistance, *debug)
+		return platecalc.BestSolution(tree, setWeights, *maxDistance, opts)
 	}
 
 	var plan plans.WorkoutPlan

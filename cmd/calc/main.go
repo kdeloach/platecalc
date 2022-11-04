@@ -15,6 +15,7 @@ var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plat
 var maxDistance = flag.Int("maxdistance", 5, "maximum distance to search tree")
 var debug = flag.Bool("debug", false, "display debug output")
 var simple = flag.Bool("simple", false, "use simple plate orderings")
+var preferLess = flag.Bool("less", false, "prefer less/heavier plates")
 
 func main() {
 	flag.Usage = func() {
@@ -44,11 +45,16 @@ func main() {
 		tree.Add(perm...)
 	}
 
+	opts := &platecalc.SolutionOpts{
+		Debug:            *debug,
+		PreferLessPlates: *preferLess,
+	}
+
 	var solution []*platecalc.Tree
 	if *simple {
-		solution = platecalc.SimpleSolution(tree, setWeights, *debug)
+		solution = platecalc.SimpleSolution(tree, setWeights, opts)
 	} else {
-		solution = platecalc.BestSolution(tree, setWeights, *maxDistance, *debug)
+		solution = platecalc.BestSolution(tree, setWeights, *maxDistance, opts)
 	}
 	if solution == nil {
 		log.Fatalf("no solution found")

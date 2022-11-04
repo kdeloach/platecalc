@@ -2,6 +2,7 @@ package platecalc
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -25,18 +26,22 @@ func NewTree(parent *Tree, value float32) *Tree {
 	}
 }
 
-func (t *Tree) Score() int {
+func (t *Tree) Score(preferLessPlates bool) int {
 	if t.Parent == nil {
 		return 0
 	}
 
-	// scale up heavier plates; prefer lighter plates
-	scale := t.Value / 10
-	if scale < 1 {
-		scale = 1
+	var scale float32 = 1
+
+	if !preferLessPlates {
+		// scale up heavier plates; prefer lighter plates
+		scale = float32(math.Round(float64(t.Value) / 10))
+		if scale < 1 {
+			scale = 1
+		}
 	}
 
-	return t.Parent.Score() + t.Depth*int(t.Value*scale)
+	return t.Parent.Score(preferLessPlates) + t.Depth*int(t.Value*scale)
 }
 
 func (t *Tree) TotalWeight() int {

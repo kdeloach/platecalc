@@ -5,6 +5,11 @@ import (
 	"math"
 )
 
+type SolutionOpts struct {
+	Debug            bool
+	PreferLessPlates bool // Prefer less/heavier over more/lighter plates
+}
+
 // Permutations returns every possible combination as tuples of length 1 to N.
 // Ex: [1, 2, 3] -> [[1], [1,2], [1,2,3], [1,3,2], [2], [2,1], ...]
 func Permutations(plates ...float32) [][]float32 {
@@ -32,7 +37,7 @@ func Permutations(plates ...float32) [][]float32 {
 // BestSolution returns the optimal sequence of plate changes for setWeights
 // by walking the permutation tree and selecting the closest nodes with the
 // lowest combined score.
-func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*Tree {
+func BestSolution(tree *Tree, setWeights []int, maxDistance int, opts *SolutionOpts) []*Tree {
 	if len(setWeights) == 0 {
 		return nil
 	}
@@ -44,9 +49,9 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 		if score < bestScore {
 			bestScore = score
 			solution = nodes
-			if debug {
+			if opts.Debug {
 				for _, n := range nodes {
-					fmt.Printf("%3v: %v (score=%v)\n", n.TotalWeight(), n, n.Score())
+					fmt.Printf("%3v: %v (score=%v)\n", n.TotalWeight(), n, n.Score(opts.PreferLessPlates))
 				}
 				fmt.Printf("total=%v\n\n", score)
 			}
@@ -68,7 +73,7 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 					nodes = append(nodes, node)
 
 					// Optimize for number of plates added/removed by weight
-					score := prevScore + node.Score()*dist
+					score := prevScore + node.Score(opts.PreferLessPlates)*dist
 
 					// Optimize for number of plates added/removed by count
 					// score := prevScore + dist
@@ -82,7 +87,7 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 	tree.Walk(func(node *Tree) {
 		if node.TotalWeight() == head {
 			nodes := []*Tree{node}
-			nextFn(node.Score(), nodes)
+			nextFn(node.Score(opts.PreferLessPlates), nodes)
 		}
 	})
 
@@ -91,11 +96,11 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, debug bool) []*
 
 // SimpleSolution returns the best plate arrangement for each individual weight
 // in setWeights.
-func SimpleSolution(tree *Tree, setWeights []int, debug bool) []*Tree {
+func SimpleSolution(tree *Tree, setWeights []int, opts *SolutionOpts) []*Tree {
 	solution := make([]*Tree, 0)
 
 	for _, weight := range setWeights {
-		best := BestSolution(tree, []int{weight}, 0, debug)
+		best := BestSolution(tree, []int{weight}, 0, opts)
 		if best == nil {
 			return nil
 		}

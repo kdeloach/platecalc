@@ -26,6 +26,7 @@ type WorkoutPlanSettings struct {
 	BenchRepMax        int    `yaml:"BenchRepMax"`
 	TrainingMaxPercent int    `yaml:"TrainingMaxPercent"`
 	Progression5s      bool   `yaml:"Progression5s"`
+	PreferLessPlates   bool   `yaml:"PreferLessPlates"`
 	PlateCalcFn        PlateCalcFunction
 }
 
