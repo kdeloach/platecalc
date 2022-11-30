@@ -7,10 +7,10 @@ Plates: 35,25,10,10,5,5,2.5
 Progression5s: true
 # TrainingMaxPercent: 90
 
-PressRepMax: 70
-BenchRepMax: 95
-SquatRepMax: 135
-DeadliftRepMax: 145
+PressRepMax: 75
+BenchRepMax: 100
+SquatRepMax: 145
+DeadliftRepMax: 155
 
 # Personal Records
 PressPR: "140x5"    # Intermediate
