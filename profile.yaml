@@ -1,6 +1,7 @@
 Plan: Stronglifts
 TrainingMaxPercent: 100
 PreferLessPlates: true
+Plates: 35,25,10,10,5,5,2.5
 
 # Wendler531BBB settings
 Progression5s: true

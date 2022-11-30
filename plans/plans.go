@@ -3,6 +3,8 @@ package plans
 import (
 	"encoding/csv"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/kdeloach/platecalc"
 )
@@ -20,6 +22,7 @@ type WorkoutPlan interface {
 
 type WorkoutPlanSettings struct {
 	Plan               string `yaml:"Plan"`
+	Plates             string `yaml:"Plates"`
 	SquatRepMax        int    `yaml:"SquatRepMax"`
 	DeadliftRepMax     int    `yaml:"DeadliftRepMax"`
 	PressRepMax        int    `yaml:"PressRepMax"`
@@ -45,4 +48,16 @@ func (settings *WorkoutPlanSettings) repMax(liftName string) int {
 	}
 	log.Fatalf("unknown lift name: %v", liftName)
 	return 0
+}
+
+func ParsePlates(strPlates string) ([]float32, error) {
+	plates := []float32{}
+	for _, s := range strings.Split(strPlates, ",") {
+		f, err := strconv.ParseFloat(s, 32)
+		if err != nil {
+			return nil, err
+		}
+		plates = append(plates, float32(f))
+	}
+	return plates, nil
 }
