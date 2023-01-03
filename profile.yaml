@@ -1,16 +1,13 @@
-Plan: Stronglifts
-TrainingMaxPercent: 100
+Plan: Custom531
+TrainingMaxPercent: 90
+Progression5s: true
 PreferLessPlates: true
 Plates: 35,25,10,10,5,5,2.5
 
-# Wendler531BBB settings
-Progression5s: true
-# TrainingMaxPercent: 90
-
-PressRepMax: 75
-BenchRepMax: 100
-SquatRepMax: 145
-DeadliftRepMax: 155
+SquatRepMax: 225
+DeadliftRepMax: 235
+BenchRepMax: 125
+PressRepMax: 105
 
 # Personal Records
 PressPR: "140x5"    # Intermediate
