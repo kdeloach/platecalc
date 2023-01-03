@@ -121,3 +121,10 @@ func AbsInt(x int) int {
 	}
 	return x
 }
+
+func FloorLimit(n int, limit int) int {
+	if n < limit {
+		return limit
+	}
+	return n
+}
