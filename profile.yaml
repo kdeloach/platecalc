@@ -4,10 +4,13 @@ Progression5s: true
 PreferLessPlates: true
 Plates: 35,25,10,10,5,5,2.5
 
-SquatRepMax: 225
-DeadliftRepMax: 235
-BenchRepMax: 125
-PressRepMax: 105
+# Current 1RM
+SquatRepMax: 235
+DeadliftRepMax: 245
+BenchRepMax: 130
+PressRepMax: 110
+RowsRepMax: 120
+ChinupsRepMax: 0
 
 # Personal Records
 PressPR: "140x5"    # Intermediate
