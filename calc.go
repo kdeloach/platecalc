@@ -37,7 +37,7 @@ func Permutations(plates ...float32) [][]float32 {
 // BestSolution returns the optimal sequence of plate changes for setWeights
 // by walking the permutation tree and selecting the closest nodes with the
 // lowest combined score.
-func BestSolution(tree *Tree, setWeights []int, maxDistance int, opts *SolutionOpts) []*Tree {
+func BestSolution(tree *Tree, setWeights []float32, maxDistance int, opts *SolutionOpts) []*Tree {
 	if len(setWeights) == 0 {
 		return nil
 	}
@@ -96,11 +96,11 @@ func BestSolution(tree *Tree, setWeights []int, maxDistance int, opts *SolutionO
 
 // SimpleSolution returns the best plate arrangement for each individual weight
 // in setWeights.
-func SimpleSolution(tree *Tree, setWeights []int, opts *SolutionOpts) []*Tree {
+func SimpleSolution(tree *Tree, setWeights []float32, opts *SolutionOpts) []*Tree {
 	solution := make([]*Tree, 0)
 
 	for _, weight := range setWeights {
-		best := BestSolution(tree, []int{weight}, 0, opts)
+		best := BestSolution(tree, []float32{weight}, 0, opts)
 		if best == nil {
 			return nil
 		}

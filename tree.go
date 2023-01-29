@@ -44,11 +44,11 @@ func (t *Tree) Score(preferLessPlates bool) int {
 	return t.Parent.Score(preferLessPlates) + t.Depth*int(t.Value*scale)
 }
 
-func (t *Tree) TotalWeight() int {
+func (t *Tree) TotalWeight() float32 {
 	if t.Parent == nil {
-		return int(t.Value)
+		return t.Value
 	}
-	return t.Parent.TotalWeight() + int(t.Value*2)
+	return t.Parent.TotalWeight() + t.Value*2
 }
 
 func (t *Tree) Find(plates ...float32) *Tree {

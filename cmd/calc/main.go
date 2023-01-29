@@ -11,7 +11,7 @@ import (
 )
 
 var barWeight = flag.Int("bar", 45, "bar weight")
-var platesFlag = flag.String("plates", "45,35,25,10,10,5,5,2.5", "available plates")
+var platesFlag = flag.String("plates", "35,25,10,10,5,5,2.5,1.25", "available plates")
 var maxDistance = flag.Int("maxdistance", 5, "maximum distance to search tree")
 var debug = flag.Bool("debug", false, "display debug output")
 var simple = flag.Bool("simple", false, "use simple plate orderings")
@@ -69,23 +69,23 @@ func main() {
 func parsePlates() ([]float32, error) {
 	plates := []float32{}
 	for _, s := range strings.Split(*platesFlag, ",") {
-		f, err := strconv.ParseFloat(s, 32)
+		n, err := strconv.ParseFloat(s, 32)
 		if err != nil {
 			return nil, err
 		}
-		plates = append(plates, float32(f))
+		plates = append(plates, float32(n))
 	}
 	return plates, nil
 }
 
-func parseWeights() ([]int, error) {
-	weights := []int{}
+func parseWeights() ([]float32, error) {
+	weights := []float32{}
 	for _, s := range flag.Args() {
-		i, err := strconv.Atoi(s)
+		n, err := strconv.ParseFloat(s, 32)
 		if err != nil {
 			return nil, err
 		}
-		weights = append(weights, platecalc.RoundUpToNearest(float32(i), 5))
+		weights = append(weights, float32(n))
 	}
 	return weights, nil
 }

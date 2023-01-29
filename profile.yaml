@@ -2,7 +2,7 @@ Plan: Custom531
 TrainingMaxPercent: 90
 Progression5s: true
 PreferLessPlates: true
-Plates: 35,25,10,10,5,5,2.5
+Plates: 35,25,10,10,5,5,2.5,1.25
 
 # Current 1RM
 SquatRepMax: 235
